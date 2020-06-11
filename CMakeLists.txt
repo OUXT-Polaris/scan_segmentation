@@ -43,6 +43,18 @@ rclcpp_components_register_nodes(scan_segmentation_component
   "scan_segmentation::ScanSegmentationComponent")
 ament_export_libraries(scan_segmentation_component)
 
+add_executable(scan_segmentation_node
+  src/scan_segmentation_node.cpp
+)
+target_link_libraries(scan_segmentation_node scan_segmentation_component)
+ament_target_dependencies(scan_segmentation_node
+  rclcpp
+  rclcpp_components)
+
+install(TARGETS
+  scan_segmentation_node
+  DESTINATION lib/scan_segmentation
+)
 install(TARGETS scan_segmentation_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
