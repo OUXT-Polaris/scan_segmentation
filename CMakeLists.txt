@@ -20,7 +20,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(pcl_conversions REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
 include_directories(
   include
@@ -33,7 +35,9 @@ target_compile_definitions(scan_segmentation_component
 ament_target_dependencies(scan_segmentation_component
   rclcpp
   rclcpp_components
-  pcl_conversions
+  tf2_ros
+  tf2_geometry_msgs
+  visualization_msgs
   sensor_msgs)
 rclcpp_components_register_nodes(scan_segmentation_component
   "scan_segmentation::ScanSegmentationComponent")

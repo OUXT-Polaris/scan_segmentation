@@ -61,8 +61,14 @@ extern "C" {
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <geometry_msgs/msg/point32.hpp>
 #include <geometry_msgs/msg/polygon.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_ros/transform_listener.h>
+
+#include <boost/optional.hpp>
 
 #include <vector>
+#include <string>
 
 namespace scan_segmentation
 {
@@ -75,15 +81,29 @@ public:
 private:
   void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr data);
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
   std::vector<geometry_msgs::msg::Point32> getPoints(
     const sensor_msgs::msg::LaserScan::SharedPtr scan);
   std::vector<geometry_msgs::msg::Polygon> getPolygons(
     std::vector<geometry_msgs::msg::Point32> points);
+  std::vector<geometry_msgs::msg::Polygon> transformPolygons(
+    std::vector<geometry_msgs::msg::Polygon> polygons, std_msgs::msg::Header header);
+  boost::optional<std::vector<geometry_msgs::msg::Polygon>> inflatePolygons(
+    std::vector<geometry_msgs::msg::Polygon> polygons);
+  visualization_msgs::msg::MarkerArray generateMarker(
+    std::vector<geometry_msgs::msg::Polygon> polygons, std_msgs::msg::Header header);
+  visualization_msgs::msg::MarkerArray generateDeleteMarker();
+  boost::optional<geometry_msgs::msg::PointStamped> transform(
+    geometry_msgs::msg::PointStamped point, std::string target_frame_id, bool exact = false);
   double max_segment_distance_;
   double min_segment_distance_;
   double distance_ratio_;
   double theta_threashold_;
+  tf2_ros::Buffer buffer_;
+  tf2_ros::TransformListener listener_;
+  std::string output_frame_id_;
+  std::string visualize_frame_id_;
 };
-}
+}  // namespace scan_segmentation
 
 #endif  // SCAN_SEGMENTATION__SCAN_SEGMENTATION_COMPONENT_HPP_
