@@ -67,8 +67,9 @@ boost::optional<geometry_msgs::msg::PointStamped> ScanSegmentationComponent::tra
       std::chrono::nanoseconds(point.header.stamp.nanosec));
     try {
       geometry_msgs::msg::TransformStamped transform_stamped =
-        buffer_.lookupTransform(target_frame_id, point.header.frame_id,
-          time_point, tf2::durationFromSec(1.0));
+        buffer_.lookupTransform(
+        target_frame_id, point.header.frame_id,
+        time_point, tf2::durationFromSec(1.0));
       tf2::doTransform(point, point, transform_stamped);
       return point;
     } catch (...) {
@@ -80,8 +81,9 @@ boost::optional<geometry_msgs::msg::PointStamped> ScanSegmentationComponent::tra
       std::chrono::nanoseconds(0));
     try {
       geometry_msgs::msg::TransformStamped transform_stamped =
-        buffer_.lookupTransform(target_frame_id, point.header.frame_id,
-          time_point, tf2::durationFromSec(1.0));
+        buffer_.lookupTransform(
+        target_frame_id, point.header.frame_id,
+        time_point, tf2::durationFromSec(1.0));
       tf2::doTransform(point, point, transform_stamped);
       return point;
     } catch (...) {
@@ -116,9 +118,11 @@ std::vector<geometry_msgs::msg::Polygon> ScanSegmentationComponent::getPolygons(
       is_connected.push_back(false);
       continue;
     }
-    double dist_threashold = boost::algorithm::clamp(std::min(d0,
+    double dist_threashold = boost::algorithm::clamp(
+      std::min(
+        d0,
         d1) * distance_ratio_, min_segment_distance_,
-        max_segment_distance_);
+      max_segment_distance_);
     if (l > dist_threashold) {
       is_connected.push_back(false);
       continue;
@@ -270,16 +274,18 @@ ScanSegmentationComponent::inflatePolygons(
     {
       boost_polygon poly;
       double d = std::hypot(point_itr->x, point_itr->y);
-      double radius = boost::algorithm::clamp(d * distance_ratio_ * 0.5, min_segment_distance_,
-          max_segment_distance_);
+      double radius = boost::algorithm::clamp(
+        d * distance_ratio_ * 0.5, min_segment_distance_,
+        max_segment_distance_);
       std::array<double, 8> x, y;
       for (int i = 0; i < 8; i++) {
         x[i] = point_itr->x + radius * std::sin(M_PI_4 * i);
         y[i] = point_itr->y + radius * std::cos(M_PI_4 * i);
       }
       bg::exterior_ring(poly) =
-        boost::assign::list_of<boost_point>(x[0], y[0])(x[1], y[1])(x[2], y[2])(x[3], y[3])(x[4],
-          y[4])(x[5], y[5])(x[6], y[6])(x[7], y[7])(x[0], y[0]);
+        boost::assign::list_of<boost_point>(x[0], y[0])(x[1], y[1])(x[2], y[2])(x[3], y[3])(
+        x[4],
+        y[4])(x[5], y[5])(x[6], y[6])(x[7], y[7])(x[0], y[0]);
       if (point_itr == poly_itr->points.begin()) {
         union_poly = poly;
       } else {
