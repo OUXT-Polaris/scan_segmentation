@@ -1,6 +1,11 @@
+
 name: ROS2-Foxy
 
-on: [push, pull_request]
+on:
+  schedule:
+    - cron: 0 0 * * *
+  push:
+  workflow_dispatch:
 
 jobs:
     job1:
@@ -27,9 +32,11 @@ jobs:
             - name: Install dependencies
               run: |
                   source /opt/ros/foxy/setup.bash
-                  sudo apt install -y python3-rosdep python3-vcstool
+                  sudo apt install -y python3-rosdep python3-vcstool python3-sphinx-rtd-theme 
                   sudo rosdep init
                   rosdep update
+                  cd ~/ros2_ws
+                  vcs import src < src/scan_segmentation/dependency.repos
                   cd ~/ros2_ws/src
                   rosdep install -r -y --from-paths . --ignore-src
             - name: Build packages
