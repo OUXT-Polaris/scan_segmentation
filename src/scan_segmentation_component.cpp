@@ -255,7 +255,7 @@ void ScanSegmentationComponent::scanCallback(const sensor_msgs::msg::LaserScan::
   auto polygons = getPolygons(points);
   auto inflated_polygons = inflatePolygons(polygons);
   if (inflated_polygons) {
-    if(previous_marker_size_ > inflated_polygons.get().size()) {
+    if (previous_marker_size_ > inflated_polygons.get().size()) {
       marker_pub_->publish(generateDeleteMarker());
     }
     auto marker = generateMarker(inflated_polygons.get(), data->header);
@@ -328,8 +328,7 @@ std::vector<geometry_msgs::msg::Point32> ScanSegmentationComponent::getPoints(
 {
   std::vector<geometry_msgs::msg::Point32> ret;
   for (int i = 0; i < static_cast<int>(scan->ranges.size()); i++) {
-    if (range_max_ >= scan->ranges[i])
-    {
+    if (range_max_ >= scan->ranges[i]) {
       double theta = scan->angle_min + scan->angle_increment * static_cast<double>(i);
       geometry_msgs::msg::Point32 p;
       p.x = scan->ranges[i] * std::cos(theta);
