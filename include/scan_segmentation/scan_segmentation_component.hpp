@@ -99,10 +99,12 @@ private:
   double min_segment_distance_;
   double distance_ratio_;
   double theta_threashold_;
+  double range_max_;
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener listener_;
   std::string output_frame_id_;
   std::string visualize_frame_id_;
+  size_t previous_marker_size_;
 };
 }  // namespace scan_segmentation
 

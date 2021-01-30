@@ -34,6 +34,7 @@ namespace scan_segmentation
 ScanSegmentationComponent::ScanSegmentationComponent(const rclcpp::NodeOptions & options)
 : Node("scan_segmentation", options), buffer_(get_clock()), listener_(buffer_)
 {
+  previous_marker_size_ = 0;
   std::string scan_topic;
   declare_parameter("scan_topic", "/obstacle_scan");
   get_parameter("scan_topic", scan_topic);
@@ -45,6 +46,8 @@ ScanSegmentationComponent::ScanSegmentationComponent(const rclcpp::NodeOptions &
   get_parameter("distance_ratio", distance_ratio_);
   declare_parameter("theta_threashold", M_PI * 0.1);
   get_parameter("theta_threashold", theta_threashold_);
+  declare_parameter("range_max", 100.0);
+  get_parameter("range_max", range_max_);
   declare_parameter("output_frame_id", "base_link");
   get_parameter("output_frame_id", output_frame_id_);
   declare_parameter("visualize_frame_id", "map");
@@ -251,10 +254,13 @@ void ScanSegmentationComponent::scanCallback(const sensor_msgs::msg::LaserScan::
   auto points = getPoints(data);
   auto polygons = getPolygons(points);
   auto inflated_polygons = inflatePolygons(polygons);
-  marker_pub_->publish(generateDeleteMarker());
   if (inflated_polygons) {
+    if(previous_marker_size_ > inflated_polygons.get().size()) {
+      marker_pub_->publish(generateDeleteMarker());
+    }
     auto marker = generateMarker(inflated_polygons.get(), data->header);
     marker_pub_->publish(marker);
+    previous_marker_size_ = marker.markers.size();
   }
 }
 
@@ -322,7 +328,8 @@ std::vector<geometry_msgs::msg::Point32> ScanSegmentationComponent::getPoints(
 {
   std::vector<geometry_msgs::msg::Point32> ret;
   for (int i = 0; i < static_cast<int>(scan->ranges.size()); i++) {
-    if (scan->range_max >= scan->ranges[i] && scan->ranges[i] >= scan->range_min) {
+    if (range_max_ >= scan->ranges[i])
+    {
       double theta = scan->angle_min + scan->angle_increment * static_cast<double>(i);
       geometry_msgs::msg::Point32 p;
       p.x = scan->ranges[i] * std::cos(theta);
