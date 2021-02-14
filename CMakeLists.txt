@@ -23,6 +23,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
+find_package(pcl_apps_msgs REQUIRED)
 
 include_directories(
   include
@@ -38,6 +39,7 @@ ament_target_dependencies(scan_segmentation_component
   tf2_ros
   tf2_geometry_msgs
   visualization_msgs
+  pcl_apps_msgs
   sensor_msgs)
 rclcpp_components_register_nodes(scan_segmentation_component
   "scan_segmentation::ScanSegmentationComponent")
@@ -67,12 +69,6 @@ install(
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
 
