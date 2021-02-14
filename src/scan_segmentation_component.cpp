@@ -56,6 +56,7 @@ ScanSegmentationComponent::ScanSegmentationComponent(const rclcpp::NodeOptions &
     scan_topic, 1,
     std::bind(&ScanSegmentationComponent::scanCallback, this, std::placeholders::_1));
   marker_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/marker", 1);
+  polygon_pub_ = this->create_publisher<pcl_apps_msgs::msg::PolygonArray>("~/polygon", 1);
 }
 
 boost::optional<geometry_msgs::msg::PointStamped> ScanSegmentationComponent::transform(
@@ -254,7 +255,10 @@ void ScanSegmentationComponent::scanCallback(const sensor_msgs::msg::LaserScan::
   auto points = getPoints(data);
   auto polygons = getPolygons(points);
   auto inflated_polygons = inflatePolygons(polygons);
+  pcl_apps_msgs::msg::PolygonArray polygon_msg;
+  polygon_msg.header = data->header;
   if (inflated_polygons) {
+    polygon_msg.polygon = inflated_polygons.get();
     if (previous_marker_size_ > inflated_polygons.get().size()) {
       marker_pub_->publish(generateDeleteMarker());
     }
@@ -262,6 +266,7 @@ void ScanSegmentationComponent::scanCallback(const sensor_msgs::msg::LaserScan::
     marker_pub_->publish(marker);
     previous_marker_size_ = marker.markers.size();
   }
+  polygon_pub_->publish(polygon_msg);
 }
 
 boost::optional<std::vector<geometry_msgs::msg::Polygon>>

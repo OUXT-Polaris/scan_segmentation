@@ -64,6 +64,7 @@ extern "C" {
 #include <visualization_msgs/msg/marker_array.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+#include <pcl_apps_msgs/msg/polygon_array.hpp>
 
 #include <boost/optional.hpp>
 
@@ -82,6 +83,7 @@ private:
   void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr data);
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
+  rclcpp::Publisher<pcl_apps_msgs::msg::PolygonArray>::SharedPtr polygon_pub_;
   std::vector<geometry_msgs::msg::Point32> getPoints(
     const sensor_msgs::msg::LaserScan::SharedPtr scan);
   std::vector<geometry_msgs::msg::Polygon> getPolygons(
