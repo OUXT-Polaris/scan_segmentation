@@ -18,14 +18,14 @@ jobs:
         rosdistro: [humble]
         include:
           # Galactic Geochelone (May 2021 - November 2022)
-          - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-galactic-ros-base-latest
-            rosdistro: galactic
+          # - docker_image: rostooling/setup-ros-docker:ubuntu-focal-ros-galactic-ros-base-latest
+          #   rosdistro: galactic
           # Humble Hawksbill (May 2022 - May 2027)
           - docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
             rosdistro: humble
           # Rolling Ridley
-          - docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-rolling-ros-base-latest
-            rosdistro: rolling
+          # - docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-rolling-ros-base-latest
+          #   rosdistro: rolling
     env:
       ROS_DISTRO: ${{ matrix.rosdistro }}
     container:
