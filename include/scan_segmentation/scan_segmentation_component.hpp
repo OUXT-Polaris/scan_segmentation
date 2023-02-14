@@ -56,21 +56,20 @@ extern "C" {
 }  // extern "C"
 #endif
 
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+
+#include <boost/optional.hpp>
+#include <geometry_msgs/msg/point32.hpp>
+#include <geometry_msgs/msg/polygon.hpp>
+#include <pcl_apps_msgs/msg/polygon_array.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
-#include <geometry_msgs/msg/point32.hpp>
-#include <geometry_msgs/msg/polygon.hpp>
-#include <visualization_msgs/msg/marker_array.hpp>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <tf2_ros/transform_listener.h>
-#include <tf2_ros/buffer.h>
-#include <pcl_apps_msgs/msg/polygon_array.hpp>
-
-#include <boost/optional.hpp>
-
-#include <vector>
 #include <string>
+#include <vector>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace scan_segmentation
 {

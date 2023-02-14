@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <scan_segmentation/scan_segmentation_component.hpp>
-#include <rclcpp_components/register_node_macro.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include <boost/algorithm/clamp.hpp>
-#include <boost/geometry.hpp>
-#include <boost/geometry/geometries/polygon.hpp>
-#include <boost/geometry/geometries/point_xy.hpp>
-#include <boost/assign/list_of.hpp>
-
-#include <cmath>
 #include <algorithm>
-#include <vector>
+#include <boost/algorithm/clamp.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <cmath>
+#include <rclcpp_components/register_node_macro.hpp>
+#include <scan_segmentation/scan_segmentation_component.hpp>
 #include <string>
+#include <vector>
 
 #define BOOST_GEOMETRY_DEBUG_HAS_SELF_INTERSECTIONS
 
@@ -70,24 +69,19 @@ boost::optional<geometry_msgs::msg::PointStamped> ScanSegmentationComponent::tra
       std::chrono::seconds(point.header.stamp.sec) +
       std::chrono::nanoseconds(point.header.stamp.nanosec));
     try {
-      geometry_msgs::msg::TransformStamped transform_stamped =
-        buffer_.lookupTransform(
-        target_frame_id, point.header.frame_id,
-        time_point, tf2::durationFromSec(1.0));
+      geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
+        target_frame_id, point.header.frame_id, time_point, tf2::durationFromSec(1.0));
       tf2::doTransform(point, point, transform_stamped);
       return point;
     } catch (...) {
       return boost::none;
     }
   } else {
-    tf2::TimePoint time_point = tf2::TimePoint(
-      std::chrono::seconds(0) +
-      std::chrono::nanoseconds(0));
+    tf2::TimePoint time_point =
+      tf2::TimePoint(std::chrono::seconds(0) + std::chrono::nanoseconds(0));
     try {
-      geometry_msgs::msg::TransformStamped transform_stamped =
-        buffer_.lookupTransform(
-        target_frame_id, point.header.frame_id,
-        time_point, tf2::durationFromSec(1.0));
+      geometry_msgs::msg::TransformStamped transform_stamped = buffer_.lookupTransform(
+        target_frame_id, point.header.frame_id, time_point, tf2::durationFromSec(1.0));
       tf2::doTransform(point, point, transform_stamped);
       return point;
     } catch (...) {
@@ -123,10 +117,7 @@ std::vector<geometry_msgs::msg::Polygon> ScanSegmentationComponent::getPolygons(
       continue;
     }
     double dist_threashold = boost::algorithm::clamp(
-      std::min(
-        d0,
-        d1) * distance_ratio_, min_segment_distance_,
-      max_segment_distance_);
+      std::min(d0, d1) * distance_ratio_, min_segment_distance_, max_segment_distance_);
     if (l > dist_threashold) {
       is_connected.push_back(false);
       continue;
@@ -194,8 +185,7 @@ visualization_msgs::msg::MarkerArray ScanSegmentationComponent::generateMarker(
     marker.color.b = 0.0;
     marker.color.a = 1.0;
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
-      point_itr++)
-    {
+         point_itr++) {
       geometry_msgs::msg::PointStamped p;
       p.point.x = point_itr->x;
       p.point.y = point_itr->y;
@@ -225,8 +215,7 @@ std::vector<geometry_msgs::msg::Polygon> ScanSegmentationComponent::transformPol
     geometry_msgs::msg::Polygon poly;
     bool transform_succeeded = true;
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
-      point_itr++)
-    {
+         point_itr++) {
       geometry_msgs::msg::PointStamped p;
       p.point.x = point_itr->x;
       p.point.y = point_itr->y;
@@ -270,8 +259,7 @@ void ScanSegmentationComponent::scanCallback(const sensor_msgs::msg::LaserScan::
 }
 
 boost::optional<std::vector<geometry_msgs::msg::Polygon>>
-ScanSegmentationComponent::inflatePolygons(
-  std::vector<geometry_msgs::msg::Polygon> polygons)
+ScanSegmentationComponent::inflatePolygons(std::vector<geometry_msgs::msg::Polygon> polygons)
 {
   namespace bg = boost::geometry;
   namespace trans = bg::strategy::transform;
@@ -281,22 +269,18 @@ ScanSegmentationComponent::inflatePolygons(
   for (auto poly_itr = polygons.begin(); poly_itr != polygons.end(); poly_itr++) {
     boost_polygon union_poly;
     for (auto point_itr = poly_itr->points.begin(); point_itr != poly_itr->points.end();
-      point_itr++)
-    {
+         point_itr++) {
       boost_polygon poly;
       double d = std::hypot(point_itr->x, point_itr->y);
       double radius = boost::algorithm::clamp(
-        d * distance_ratio_ * 0.5, min_segment_distance_,
-        max_segment_distance_);
+        d * distance_ratio_ * 0.5, min_segment_distance_, max_segment_distance_);
       std::array<double, 8> x, y;
       for (int i = 0; i < 8; i++) {
         x[i] = point_itr->x + radius * std::sin(M_PI_4 * i);
         y[i] = point_itr->y + radius * std::cos(M_PI_4 * i);
       }
-      bg::exterior_ring(poly) =
-        boost::assign::list_of<boost_point>(x[0], y[0])(x[1], y[1])(x[2], y[2])(x[3], y[3])(
-        x[4],
-        y[4])(x[5], y[5])(x[6], y[6])(x[7], y[7])(x[0], y[0]);
+      bg::exterior_ring(poly) = boost::assign::list_of<boost_point>(x[0], y[0])(x[1], y[1])(
+        x[2], y[2])(x[3], y[3])(x[4], y[4])(x[5], y[5])(x[6], y[6])(x[7], y[7])(x[0], y[0]);
       if (point_itr == poly_itr->points.begin()) {
         union_poly = poly;
       } else {
@@ -313,8 +297,7 @@ ScanSegmentationComponent::inflatePolygons(
     bg::convex_hull(union_poly, hull);
     geometry_msgs::msg::Polygon polygon;
     for (auto it = boost::begin(boost::geometry::exterior_ring(hull));
-      it != boost::end(boost::geometry::exterior_ring(hull)); ++it)
-    {
+         it != boost::end(boost::geometry::exterior_ring(hull)); ++it) {
       double x = bg::get<0>(*it);
       double y = bg::get<1>(*it);
       geometry_msgs::msg::Point32 p;
