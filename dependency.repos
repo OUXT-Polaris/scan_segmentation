@@ -15,3 +15,7 @@ repositories:
     type: git
     url: https://github.com/OUXT-Polaris/ouxt_common.git
     version: master
+  perception_msgs:
+    type: git
+    url: https://github.com/OUXT-Polaris/perception_msgs.git
+    version: master
