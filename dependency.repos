@@ -3,6 +3,10 @@ repositories:
     type: git
     url: https://github.com/OUXT-Polaris/pcl_apps.git
     version: master
+  pcl_type_adapter:
+    type: git
+    url: https://github.com/OUXT-Polaris/pcl_type_adapter.git
+    version: master
   message_synchronizer:
     type: git
     url: https://github.com/OUXT-Polaris/message_synchronizer.git
@@ -10,4 +14,8 @@ repositories:
   ouxt_common:
     type: git
     url: https://github.com/OUXT-Polaris/ouxt_common.git
+    version: master
+  perception_msgs:
+    type: git
+    url: https://github.com/OUXT-Polaris/perception_msgs.git
     version: master
